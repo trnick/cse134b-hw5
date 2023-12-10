@@ -1,15 +1,41 @@
 document.addEventListener('DOMContentLoaded', function () {
 
+    document.getElementById('form_rating').style.display = 'none';
+    document.querySelector('.ratings').style.display = 'flex';
+
     const form = document.querySelector("form");
     const numStars = document.querySelectorAll('.ratings span');
+    var output = new FormData();
 
     numStars.forEach(star => {
         star.addEventListener('click', function (event) {
-            event.preventDefault();
             const rating_attr = parseInt(this.getAttribute('data-rating'));
             sendRating(rating_attr);
             form.dispatchEvent(new Event('submit'));
         });
+    });
+
+    form.addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        var vars = [];
+
+        const question = document.querySelector('input[name="question"]').value;
+        const rating = document.querySelector('input[name="rating"]').value;
+
+        output.append('question', question);
+        output.append('rating', rating);
+
+        let data = JSON.stringify(vars);
+
+        fetch('https://httpbin.org/post', {
+          method: 'POST',
+          body: output,
+        })
+        .then(response => response.json())
+        .then(data => console.log(data))
+        .catch(error => console.error('Error:', error));
+        output = new FormData();
     });
 
     function sendRating(rating) {
@@ -26,16 +52,5 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         formRating.value = rating;
-        
-        fetch('https://httpbin.org/post', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(rating),
-        })
-        .then(response => response.json())
-        .then(rating => console.log(rating))
-        .catch(error => console.error(error));
     }
 });

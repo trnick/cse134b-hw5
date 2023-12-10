@@ -13,7 +13,7 @@
   }
  
  .ratings{
-    display: flex;
+    display: none;
     color: gray;
     flex-direction: row-reverse;
     justify-content: center;
